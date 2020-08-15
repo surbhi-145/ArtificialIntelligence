@@ -1,5 +1,5 @@
 
-from Search.missionaries_and_cannibals.setup import *
+from Search.setup import *
 
 
 class MnCProblem(Problem):

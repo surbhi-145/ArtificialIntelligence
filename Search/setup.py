@@ -1,8 +1,24 @@
 import sys
-
-sys.path.append(".")
-from collections import deque
 from utils import *
+from collections import *
+
+from Search.utils import PriorityQueue
+
+'''
+Classes for basic implementation : 
+    - Problem 
+    - Node 
+UnInformed Search :
+    - Breadth First Search
+    - Depth First Search
+    - Iterative Deepening Search
+    - Depth Limited Search 
+    - Best First Search 
+    - Uniform Cost Search 
+    - Bidirectional Search (TODO)
+Informed Search : 
+    - Greedy Best First Search f(n) = h(n)    
+'''
 
 
 class Problem:
@@ -63,6 +79,9 @@ class Node:
     def __hash__(self):
         return hash(self.state)
 
+    def __lt__(self, node):
+        return self.state < node.state
+
 
 def breadth_first_search(problem):
     node = Node(problem.initial)
@@ -84,7 +103,6 @@ def breadth_first_search(problem):
 
 
 def depth_first_search(problem):
-
     node = Node(problem.initial)
     frontier = [node]  # stack
     explored = set()
@@ -97,3 +115,63 @@ def depth_first_search(problem):
         frontier.extend(child for child in node.expand(problem)
                         if child.state not in explored and child not in frontier)
     return None
+
+
+def depth_limited_search(problem, limit=50):
+    def recursive_dls(node, _problem, _limit):
+
+        if _problem.goal_test(node.state):
+            return node
+        elif _limit == 0:
+            return 'cutoff'
+        else:
+            cutoff_occurred = False
+            for child in node.expand(_problem):
+                result = recursive_dls(child, _problem, _limit - 1)
+                if result == 'cutoff':
+                    cutoff_occurred = True
+                elif result is not None:
+                    return result
+                return 'cutoff' if cutoff_occurred else None
+
+    return recursive_dls(Node(problem.initial), problem, limit)
+
+
+def iterative_deepening_search(problem):
+    for depth in range(sys.maxsize):
+        result = depth_limited_search(problem, depth)
+        if result != 'cutoff':
+            return result
+
+
+def best_first_search(problem, f):
+    node = Node(problem.initial)
+    frontier = PriorityQueue('min', f)
+    frontier.append(node)
+    explored = set()
+    while frontier:
+        node = frontier.pop()
+        if problem.goal_test(node.state):
+            return node
+        explored.add(node.state)
+        for child in node.expand(problem):
+            if child.state not in explored and child not in frontier:
+                frontier.append(child)
+            elif child in frontier:
+                if f(child) < frontier[child]:
+                    del (frontier[child])
+                    frontier.append(child)
+    return None
+
+
+def uniform_cost_search(problem):
+    return best_first_search(problem, lambda node: node.path_cost)
+
+
+def bidirectional_search(problem):
+    raise NotImplementedError
+
+
+def a_star_search(problem, h=None):
+    return best_first_search(problem, lambda n: n.path_cost + h(n))
+
