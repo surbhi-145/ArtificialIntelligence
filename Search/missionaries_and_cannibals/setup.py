@@ -82,3 +82,18 @@ def breadth_first_search(problem):
                 frontier.append(child)
     return None
 
+
+def depth_first_search(problem):
+
+    node = Node(problem.initial)
+    frontier = [node]  # stack
+    explored = set()
+
+    while frontier:
+        node = frontier.pop()
+        if problem.goal_test(node.state):
+            return node
+        explored.add(node.state)
+        frontier.extend(child for child in node.expand(problem)
+                        if child.state not in explored and child not in frontier)
+    return None

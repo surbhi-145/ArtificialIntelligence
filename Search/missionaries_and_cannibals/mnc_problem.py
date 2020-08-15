@@ -1,10 +1,5 @@
-'''
-class MCObject:
-    def __init__(self, left, right, direction):
-        self.left = left
-        self.right = right
-        self.direction = direction
-'''
+
+from Search.missionaries_and_cannibals.setup import *
 
 
 class MnCProblem(Problem):
@@ -66,7 +61,8 @@ if __name__ == '__main__':
     initial_state = tuple([3, 3, 1])
     goal_state = tuple([0, 0, 0])
     problem = MnCProblem(initial_state, goal_state)
-    s = breadth_first_search(problem)
+    #s = breadth_first_search(problem)
+    s = depth_first_search(problem)
     if s:
         printSolution(s.path())
 
