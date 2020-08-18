@@ -1,5 +1,6 @@
 from Search.setup import *
 import random
+from Search.eight_puzzle.heuristics import *
 
 
 class EightPuzzle(Problem):
@@ -54,9 +55,9 @@ if __name__ == '__main__':
     print_problem()
     initial_state = (2, 4, 3, 1, 5, 6, 7, 8, 0)
     goal_state = (1, 2, 3, 4, 5, 6, 7, 8, 0)
-    puzzle = EightPuzzle(initial_state,goal_state)
+    puzzle = EightPuzzle(initial_state, goal_state)
     if puzzle.check_solvability(initial_state):
-        solution = uniform_cost_search(puzzle)
+        solution = a_star_search(puzzle, manhattan)
         if solution:
             printSolution(solution.path())
-
+            print(solution.solution())

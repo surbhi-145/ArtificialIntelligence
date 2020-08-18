@@ -1,4 +1,6 @@
 import sys
+
+import numpy as np
 from utils import *
 from collections import *
 
@@ -18,6 +20,9 @@ UnInformed Search :
     - Bidirectional Search (TODO)
 Informed Search : 
     - Greedy Best First Search f(n) = h(n)    
+    - A* Search
+    - Recursive Best First Search
+    
 '''
 
 
@@ -175,3 +180,31 @@ def bidirectional_search(problem):
 def a_star_search(problem, h=None):
     return best_first_search(problem, lambda n: n.path_cost + h(n))
 
+
+def recursive_best_first_search(problem, h=None):
+
+    def RBFS(_problem, node, flimit):
+        if _problem.goal_test(node.state):
+            return node, 0
+        successors = node.expand(_problem)
+        if len(successors) == 0:
+            return Node, np.inf
+        for s in successors:
+            s.f = max(s.path_cost + h(s), node.f)
+        while True:
+            successors.sort(key=lambda x: x.f)
+            best = successors[0]
+            if best.f > flimit:
+                return None, np.inf
+            if len(successors) > 1:
+                alternative = successors[1].f
+            else:
+                alternative = np.inf
+            result, best.f = RBFS(_problem, best, min(flimit, alternative))
+            if result is not None:
+                return result, best.f
+
+    node = Node(problem.initial)
+    node.f = h(node)
+    result, best_f = RBFS(problem, node, np.inf)
+    return result
